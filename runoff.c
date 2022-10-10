@@ -19,6 +19,8 @@ typedef struct
 }
 candidate;
 
+
+
 // Array of candidates
 candidate candidates[MAX_CANDIDATES];
 
@@ -172,13 +174,15 @@ bool print_winner(void)
             printf("%s\n", candidates[i].name);
             return true;
         }
-        return false;
+
     }
+    return false;
 }
     // Return the minimum number of votes any remaining candidate has
-int find_min(void);
-{
+int find_min(void){
+
     // delimite o int min para o max de votantes. Se o candidato foi elimindado OU numero de votos for menor que int min.
+
     int min = voter_count;
     for (int i = 0; i < candidate_count; i++)
     {
@@ -225,7 +229,6 @@ void eliminate(int min)
         {
             candidates[i].eliminated = true;
         }
-        // printf("%s\nEliminated", candidates[i].name);
     }
     return;
 }
