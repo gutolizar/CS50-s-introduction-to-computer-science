@@ -1,8 +1,7 @@
 #include "helpers.h"
 #include <math.h>
 
-
-// Convert image to grayscale
+// Convert image to grayscale / converta para grayscale
 void grayscale(int height, int width, RGBTRIPLE image[height][width])
 {
     for (int i = 0; i < height; i++)
@@ -10,7 +9,7 @@ void grayscale(int height, int width, RGBTRIPLE image[height][width])
         for (int j = 0; j < width; j++)
 
         {
-            // mude as cores para a média
+            // change colors to average / mude as cores para a média
             int rgbGray = round((image[i][j].rgbtBlue + image[i][j].rgbtGreen + image[i][j].rgbtRed) / 3.0);
 
             image[i][j].rgbtBlue = rgbGray;
@@ -21,7 +20,7 @@ void grayscale(int height, int width, RGBTRIPLE image[height][width])
     return;
 }
 
-// Convert image to sepia
+// Convert image to sepia / converta a imagem para sépia
 void sepia(int height, int width, RGBTRIPLE image[height][width])
 {
     for (int i = 0; i < height; i++)
@@ -61,55 +60,49 @@ void reflect(int height, int width, RGBTRIPLE image[height][width])
 // Blur image
 void blur(int height, int width, RGBTRIPLE image[height][width])
 {
-    // crie imagem temporária
+    RGBTRIPLE temp[height][width];
+    // make the temp image / crie imagem temporária
     // utilize os pixels originais da imagem para criar os pixels blur na imagem temporária
-    double mediar = 0;
-    double mediag = 0;
-    double mediab = 0;
-    int counter_n = 0;
-    int matrixsize = 1;
-
-    //verifique a matriz
     for (int i = 0; i < height; i++)
     {
         for (int j = 0; j < width; j++)
         {
-            //zere as médias e a contagem
-            mediar = 0;
-            mediag = 0;
-            mediab = 0;
-            counter_n = 0;
+            temp[i][j] = image[i][j];
+        }
+    }
+    //set a counter and variables to each color / defina um contador e as variaveis para cada cor
+    int counter_n = 0;
+    float red, green, blue;
+    red = green = blue = 0;
 
-            for (int l = i - matrixsize; l <= i + matrixsize; l++)
+    /* start the loop on each pixel and the neighbours to insert into a temp imagem /
+    inicie o padrão de loop sobre cada pixel e também os vizinhos para inserir numa imagem temporária*/
+    for (int i = 0; i < height; i++)
+    {
+        for (int j = 0; j < width; j++)
+        {
+            for (int k = i - 1; k <= i + 1; k++)
             {
-                if (l < 0)
+                for (int l = j - 1; l <= j + 1; l++)
                 {
-                    l = 0;
-                    if (l == height)
+                    if (l >= 0 && k >= 0 && l < width && k < height)
                     {
-                        break;
+                        // get the image value inside the variables for the colors/ pegue o valor da imagem e coloque nas variáveis das cores
+                        red += temp[k][l].rgbtRed;
+                        green += temp[k][l].rgbtGreen;
+                        blue += temp[k][l].rgbtBlue;
+                        counter_n++;
                     }
-                }
-                for (int col = j - matrixsize; col <= j + matrixsize; col++)
-                {
-                    if (col == width) break;
-                    if (col < 0)
-                    {
-                        col = 0;
-                    }
-                    counter_n++;
-
-                    mediar += image[l][col].rgbtRed;
-                    mediag += image[l][col].rgbtGreen;
-                    mediab += image[l][col].rgbtBlue;
                 }
             }
-            // defina novo padrão para o pixel
-
-            image[i][j].rgbtRed = (int)round(mediar /counter_n);
-            image[i][j].rgbtGreen = (int)round(mediag /counter_n);
-            image[i][j].rgbtBlue = (int)round(mediab /counter_n);
+            /*the value on the color variables is divide by the counter which is the matrixsize and goes into the image /
+            o valor das variáveis de cor é dividido pelo contador que é a tamanho da matriz e vai dentro da imagem*/
+            image[i][j].rgbtRed = round(red / counter_n);
+            image[i][j].rgbtGreen = round(green / counter_n);
+            image[i][j].rgbtBlue = round(blue / counter_n);
+            counter_n = 0;
+            red = green = blue = 0;
         }
     }
     return;
- }
+}
